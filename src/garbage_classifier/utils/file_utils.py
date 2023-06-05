@@ -1,6 +1,5 @@
 import tarfile
 import numpy as np
-from unittest.mock import Mock
 from pathlib import Path
 import shutil
 
@@ -50,12 +49,12 @@ def download_files_from_s3_bucket_folder(s3, bucket_name: str, folder_path: Path
     for page in paginator.paginate(**operation_parameters):
         for item in page.get('Contents', []):
             if not item['Key'].endswith('/'):
-                file_key = Path(item['Key'])
-                local_file_path = local_destination / file_key.relative_to(folder_path)
+                file_key = item['Key']
+                local_file_path = local_destination / Path(file_key).relative_to(folder_path)
 
                 local_file_path.parent.mkdir(parents=True, exist_ok=True)
                 print(f'Downloading {file_key} to {local_file_path}')
-                s3.download_file(bucket_name, str(file_key), str(local_file_path))
+                s3.download_file(bucket_name, file_key, str(local_file_path))
                 print(f'Downloaded {file_key} to {local_file_path}')
 
 def extract_tar_gz(archive_path: Path):
@@ -87,26 +86,3 @@ def extract_tar_gz(archive_path: Path):
         print(f"Error handling the archive '{archive_path}': {e}")
     except Exception as e:
         print(f"An unexpected error occurred while extracting '{archive_path}': {e}")
-
-def test_download_files_from_s3_bucket_folder():
-    # Set up the mock S3 client
-    s3 = Mock()
-
-    # Configure the paginator to return a mock page with a mock object
-    mock_paginator = Mock()
-    mock_paginator.paginate.return_value = [
-        {'Contents': [{'Key': 'my-folder/my-file.txt'}]}
-    ]
-    s3.get_paginator.return_value = mock_paginator
-
-    # Set up the parameters
-    bucket_name = 'my-bucket'
-    folder_path = Path('my-folder')
-    local_destination = Path().absolute() / 'test-folder'
-
-    download_files_from_s3_bucket_folder(s3, bucket_name, folder_path, local_destination)
-
-    # Check that the S3 client methods were called with the expected arguments
-    s3.get_paginator.assert_called_once_with('list_objects_v2')
-    mock_paginator.paginate.assert_called_once_with(Bucket=bucket_name, Prefix=str(folder_path))
-    s3.download_file.assert_called_once_with(bucket_name, 'my-folder/my-file.txt', str(local_destination / 'my-file.txt'))
