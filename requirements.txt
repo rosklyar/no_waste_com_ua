@@ -1,0 +1,6 @@
+boto3==1.26.125
+numpy==1.21.6
+pytest==7.3.1
+torch==1.8.0
+torchvision==0.9.0
+transformers==4.29.2
