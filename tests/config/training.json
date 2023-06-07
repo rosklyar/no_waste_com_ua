@@ -1,0 +1,11 @@
+{
+    "batch_size": 16,
+    "epochs": 1,
+    "learning_rate": 0.008,
+    "optimizer": "adam",
+    "fc_layer_size": 512,
+    "dropout": 0.1,
+    "image_processor" : "beit",
+    "model" : "beit",
+    "dataset_description" : "The dataset used for training is generated noise images."
+  }
