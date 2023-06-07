@@ -23,7 +23,7 @@ def create_test_folders(tmp_path):
 
 def test_split_data_folder(create_test_folders):
     input_folder, output_folder, train_output, test_output = create_test_folders
-    split_data_folder(input_folder, output_folder)
+    split_data_folder(input_folder, output_folder, 0.2)
     # Check that train_output and test_output directories exist
     assert train_output.exists()
     assert test_output.exists()
