@@ -1,0 +1,11 @@
+{
+    "batch_size": 16,
+    "epochs": 1,
+    "learning_rate": 0.008,
+    "optimizer": "sgd",
+    "fc_layer_size": 512,
+    "dropout": 0.1,
+    "image_processor" : "beit",
+    "model" : "beit",
+    "dataset_description" : "The dataset used for training and validation is [Kaggle Garbage Classification](https://www.kaggle.com/datasets/mostafaabla/garbage-classification). This dataset has 15,150 images from 12 different classes of household garbage; paper, cardboard, biological, metal, plastic, green-glass, brown-glass, white-glass, clothes, shoes, batteries, and trash."
+}

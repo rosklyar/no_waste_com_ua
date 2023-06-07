@@ -6,5 +6,6 @@
     "fc_layer_size": 512,
     "dropout": 0.1,
     "image_processor" : "beit",
-    "model" : "beit"
+    "model" : "beit",
+    "dataset_description" : "The dataset used for training is generated noise images."
   }

@@ -1,5 +1,4 @@
 import boto3
-import shutil
 from pathlib import Path
 from garbage_classifier.utils.file_utils import create_train_test_split, download_files_from_s3_bucket_folder
 
@@ -10,9 +9,8 @@ def load_and_split_train_data_from_s3(s3_access_key: str, s3_secret_key: str, s3
     download_files_from_s3_bucket_folder(s3_client, s3_bucket, s3_prefix, input_folder)
     return split_data_folder(input_folder, output_folder)
 
-def split_data_folder(input_folder: Path, output_folder: Path):
+def split_data_folder(input_folder: Path, output_folder: Path, test_ratio: float):
     train_output = output_folder / 'train'
     test_output = output_folder / 'test'
-    create_train_test_split(input_folder, train_output, test_output)
-    shutil.rmtree(input_folder)
+    create_train_test_split(input_folder, train_output, test_output, test_ratio)
     return (train_output, test_output)

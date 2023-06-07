@@ -3,8 +3,6 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 from torch.optim import SGD, Adam, Optimizer
-from garbage_classifier.models.beit.model import BeitImageClassificationProcessor
-from garbage_classifier.models.image_processor import ImageProcessor
 
 from torch.utils.data import DataLoader
 from sklearn.metrics import f1_score as measure_f1_score
@@ -13,10 +11,6 @@ class NoOpLogger:
     @staticmethod
     def log(*args, **kwargs):
         pass
-
-def create_image_processor(processor_name: str):
-    if processor_name == "beit":
-        return BeitImageClassificationProcessor("microsoft/beit-base-patch16-224-pt22k-ft22k")
 
 def create_optimizer(model : nn.Module, optimizer_name: str, lr: float) -> Optimizer:
     if optimizer_name == "sgd":
@@ -28,10 +22,10 @@ def create_optimizer(model : nn.Module, optimizer_name: str, lr: float) -> Optim
     return optimizer
 
 
-def train_epoch(model: nn.Module, image_processor: ImageProcessor, dataloader: DataLoader, optimizer, device='cpu') -> float:
+def train_epoch(model: nn.Module, dataloader: DataLoader, optimizer, device='cpu') -> float:
     cumu_loss = 0
     for _, batch in tqdm(enumerate(dataloader)):
-        frames, labels = torch.squeeze(image_processor.process(batch[0])).to(
+        frames, labels = torch.squeeze(batch[0]).to(
             device), batch[1].to(device)
         optimizer.zero_grad()
 
@@ -46,14 +40,14 @@ def train_epoch(model: nn.Module, image_processor: ImageProcessor, dataloader: D
     return cumu_loss / len(dataloader)
 
 @torch.no_grad()
-def score_model(model: nn.Module, image_processor: ImageProcessor, dataloader: DataLoader, device='cpu') -> float:
+def score_model(model: nn.Module, dataloader: DataLoader, device='cpu') -> float:
     print('Model scoring was started...')
     model.eval()
     dataloader.dataset.mode = 'eval'
     result = []
     targets = []
     for _, batch in tqdm(enumerate(dataloader)):
-        frames = torch.squeeze(image_processor.process(batch[0])).to(device)
+        frames = torch.squeeze(batch[0]).to(device)
         labels = batch[1].to(device)
         predicted = model(frames)
         predicted = predicted.logits.argmax(dim=-1)

@@ -40,5 +40,6 @@ def test_training(create_train_test_folders):
     train(config_path, train_output, test_output, output_path)
 
     assert (output_path / "model.pt").exists()
+    assert (output_path / "card.md").exists()
 
     
