@@ -42,15 +42,15 @@ def create_tar_gz_folder(src_folder: Path, output_filename: Path):
     except Exception as e:
         print(f'Error while creating {output_filename}: {e}')
 
-def download_files_from_s3_bucket_folder(s3, bucket_name: str, folder_path: Path, local_destination: Path):
+def download_files_from_s3_bucket_folder(s3, bucket_name: str, folder_path: str, local_destination: Path):
     paginator = s3.get_paginator('list_objects_v2')
-    operation_parameters = {'Bucket': bucket_name, 'Prefix': str(folder_path)}
+    operation_parameters = {'Bucket': bucket_name, 'Prefix': folder_path}
 
     for page in paginator.paginate(**operation_parameters):
         for item in page.get('Contents', []):
             if not item['Key'].endswith('/'):
                 file_key = item['Key']
-                local_file_path = local_destination / Path(file_key).relative_to(folder_path)
+                local_file_path = local_destination / Path(file_key).relative_to(Path(folder_path))
 
                 local_file_path.parent.mkdir(parents=True, exist_ok=True)
                 print(f'Downloading {file_key} to {local_file_path}')

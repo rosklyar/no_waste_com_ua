@@ -1,6 +1,5 @@
 from transformers import BeitForImageClassification, BeitImageProcessor
 from torch import nn
-
 from garbage_classifier.models.image_processor import ImageProcessor
 
 class BeitImageClassificationModel(nn.Module):
@@ -21,6 +20,7 @@ class BeitImageClassificationModel(nn.Module):
 class BeitImageClassificationProcessor(ImageProcessor):
         
         def __init__(self, model_name):
+            super().__init__()
             self.processor = BeitImageProcessor.from_pretrained(model_name)
             
         def process(self, image):

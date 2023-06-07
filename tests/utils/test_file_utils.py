@@ -55,12 +55,12 @@ def test_download_files_from_s3_bucket_folder():
 
     # Set up the parameters
     bucket_name = 'my-bucket'
-    folder_path = Path('my-folder')
+    folder_path = 'my-folder'
     local_destination = Path().absolute() / 'test-folder'
 
     download_files_from_s3_bucket_folder(s3, bucket_name, folder_path, local_destination)
 
     # Check that the S3 client methods were called with the expected arguments
     s3.get_paginator.assert_called_once_with('list_objects_v2')
-    mock_paginator.paginate.assert_called_once_with(Bucket=bucket_name, Prefix=str(folder_path))
+    mock_paginator.paginate.assert_called_once_with(Bucket=bucket_name, Prefix=folder_path)
     s3.download_file.assert_called_once_with(bucket_name, 'my-folder/my-file.txt', str(local_destination / 'my-file.txt'))
