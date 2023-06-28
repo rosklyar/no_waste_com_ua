@@ -3,9 +3,14 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 from torch.optim import SGD, Adam, Optimizer
-
+from pathlib import Path
 from torch.utils.data import DataLoader
 from sklearn.metrics import f1_score as measure_f1_score
+from alibi_detect.cd.pytorch import preprocess_drift
+from alibi_detect.utils.saving import save_detector
+from alibi_detect.cd import KSDrift
+from functools import partial
+from alibi_detect.cd.pytorch import HiddenOutput
 
 class NoOpLogger:
     @staticmethod
@@ -38,6 +43,13 @@ def train_epoch(model: nn.Module, dataloader: DataLoader, optimizer, device='cpu
         optimizer.step()
 
     return cumu_loss / len(dataloader)
+
+def save_drift_detector(model: nn.Module, dataloader: DataLoader, output_dir: Path, batch_size: int):
+    drift_detector = partial(preprocess_drift, model=HiddenOutput(model, layer=-1), batch_size=batch_size)
+    X_ref = torch.cat([data[0] for data in dataloader], dim=0)
+    X_ref = torch.squeeze(X_ref).numpy()
+    cd = KSDrift(x_ref=X_ref, preprocess_fn=drift_detector, p_val=.05, alternative='two-sided')
+    save_detector(cd, output_dir / 'drift_detector')
 
 @torch.no_grad()
 def score_model(model: nn.Module, dataloader: DataLoader, device='cpu') -> float:

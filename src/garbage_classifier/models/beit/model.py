@@ -1,4 +1,4 @@
-from transformers import BeitForImageClassification, BeitImageProcessor
+from transformers import BeitForImageClassification, BeitFeatureExtractor
 from torch import nn
 from garbage_classifier.models.image_processor import ImageProcessor
 from garbage_classifier.models.model_card import ModelCard, create_model_card
@@ -46,7 +46,7 @@ class BeitImageClassificationProcessor(ImageProcessor):
         
         def __init__(self, model_name):
             super().__init__()
-            self.processor = BeitImageProcessor.from_pretrained(model_name)
+            self.processor = BeitFeatureExtractor.from_pretrained(model_name)
             
         def process(self, image):
             return self.processor(images=image, return_tensors="pt")['pixel_values']

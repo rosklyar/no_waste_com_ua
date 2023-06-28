@@ -12,6 +12,10 @@
         "10": "Shoes",
         "11": "Trash",
         "12": "White-glass"
+    },
+
+    "idx_to_class": {
+
     }
 }
 
