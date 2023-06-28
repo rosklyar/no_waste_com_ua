@@ -1,14 +1,13 @@
 import shutil
 import pytest
-from pathlib import Path
 import numpy as np
 from PIL import Image
-from garbage_classifier.training_routines import train
 
+from garbage_classifier.image_data.image_data import ImageData
+from garbage_classifier.models.model_builder import create_image_processor
 
 @pytest.fixture
 def create_train_test_folders(tmp_path):
-    output_path = tmp_path / 'output'
     train_output = tmp_path / 'train'
     test_output = tmp_path / 'test'
     train_output.mkdir()
@@ -29,18 +28,14 @@ def create_train_test_folders(tmp_path):
             img = Image.fromarray(image_data.astype('uint8')).convert('RGB')
             img.save(test_output / category / f'file{i}.jpg')
 
-    yield train_output, test_output, output_path
+    yield train_output, test_output
     # Teardown
     shutil.rmtree(tmp_path)
 
-def test_training(create_train_test_folders):
-    train_output, test_output, output_path = create_train_test_folders
-    config_path = Path('tests/config/training.json')
-    
-    train(config_path, train_output, test_output, output_path)
-
-    assert (output_path / "model.pt").exists()
-    assert (output_path / "card.md").exists()
-    assert (output_path / "drift_detector").exists()
-
-    
+def test_image_data_creation(create_train_test_folders):
+    train_output, test_output = create_train_test_folders
+    image_processor = create_image_processor("beit")
+    garbage_data = ImageData(train_output, test_output, 8, image_processor)
+    assert garbage_data.get_train_loader() is not None
+    assert garbage_data.get_test_loader() is not None
+    assert garbage_data.idx_to_cls == {0: 'glass', 1: 'paper', 2: 'plastic', 3: 'shoes'}

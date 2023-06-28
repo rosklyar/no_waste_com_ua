@@ -12,7 +12,7 @@ This project is a part of the [nowaste.com.ua](https://nowaste.com.ua) project. 
 You can train model using next cli commands consecutively:
 1. Separate data to train and test sets
 ```
-python .\src\garbage_classifier\cli.py split_data_folder .\data\kaggle-ds .\data\splitted\ 0.2
+python .\src\garbage_classifier\cli.py split-data-folder .\data\kaggle-ds .\data\splitted\ 0.2
 ```
 Output: `.\data\splitted\train` and `.\data\splitted\test` folders with train and test data.
 2. Train model

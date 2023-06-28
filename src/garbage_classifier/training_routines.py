@@ -6,7 +6,7 @@ import wandb
 
 from garbage_classifier.image_data.image_data import ImageData
 from garbage_classifier.models.model_builder import create_model, create_image_processor
-from garbage_classifier.training.training_utils import create_optimizer, train_epoch, score_model, NoOpLogger
+from garbage_classifier.training.training_utils import create_optimizer, train_epoch, score_model, NoOpLogger, save_drift_detector
 from garbage_classifier.models.model_card import save_model_card
 
 
@@ -42,8 +42,13 @@ def train(config_path: Path, train_folder_path: Path, test_folder_path: Path, ou
         logger.log({"loss": avg_loss})
         f1_score = score_model(model, val_dataloader, device)
         logger.log({'val_f1': f1_score})
-
+    
     os.makedirs(output_dir, exist_ok=True)
+    # save idx_to_cls
+    with open(output_dir / 'idx_to_cls.json', 'w') as f:
+        f.write(str(garbage_data.idx_to_cls))
+    # save drift detector
+    save_drift_detector(model, train_dataloader, output_dir, json_config['batch_size'])
     # save model and model card
     torch.save(model, output_dir / 'model.pt')
     save_model_card(output_dir / 'card.md', model.card(json_config['dataset_description'], json_config['optimizer'], json_config['learning_rate'], json_config['epochs'], json_config['batch_size'], f1_score))

@@ -32,6 +32,7 @@ class ImageData():
         self.test_data = ImageFolder(self.test_path)
         self._train_loader = DataLoader(LazyDataset(self.train_data, image_processor, transforms), batch_size=self.batch_size, shuffle=True, num_workers=0)
         self._test_loader = DataLoader(LazyDataset(self.test_data, image_processor, transforms), batch_size=self.batch_size, shuffle=False, num_workers=0)
+        self.idx_to_cls = {v: k for k, v in self.train_data.class_to_idx.items()}
 
     def get_train_loader(self):
         return self._train_loader
