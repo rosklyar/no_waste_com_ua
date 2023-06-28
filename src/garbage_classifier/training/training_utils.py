@@ -46,7 +46,7 @@ def train_epoch(model: nn.Module, dataloader: DataLoader, optimizer, device='cpu
 
 def save_drift_detector(model: nn.Module, dataloader: DataLoader, output_dir: Path, batch_size: int):
     drift_detector = partial(preprocess_drift, model=HiddenOutput(model, layer=-1), batch_size=batch_size)
-    X_ref = torch.cat([data[0]['pixel_values'] for data in dataloader], dim=0)
+    X_ref = torch.cat([data[0] for data in dataloader], dim=0)
     X_ref = torch.squeeze(X_ref).numpy()
     cd = KSDrift(x_ref=X_ref, preprocess_fn=drift_detector, p_val=.05, alternative='two-sided')
     save_detector(cd, output_dir / 'drift_detector')
