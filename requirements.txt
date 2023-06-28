@@ -9,3 +9,4 @@ tqdm==4.65.0
 transformers==4.29.2
 wandb==0.15.1
 typer==0.4.1
+alibi-detect==0.11.2
